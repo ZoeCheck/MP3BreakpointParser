@@ -103,6 +103,7 @@
       <DependentUpon>MusicPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="NotifyProperty.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Song.cs" />
     <Compile Include="WriteLog.cs" />
     <Compile Include="ZPlay.cs" />

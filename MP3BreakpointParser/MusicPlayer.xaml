@@ -12,7 +12,7 @@
 		WindowStartupLocation="CenterScreen"
 		Loaded="Window_Loaded"
 		Closing="Window_Closing"
-		Icon="/MP3复读机;component/Images/music.ico" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None"
+		Icon="/MP3复读机;component/Images/music.ico" Background="#FF252A2F" AllowsTransparency="True" WindowStyle="None"
 		MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
 	<Grid x:Name="LayoutRoot" Margin="0">
@@ -29,8 +29,8 @@
 				<ColumnDefinition Width="0.523*"/>
 				<ColumnDefinition Width="0.094*"/>
 			</Grid.ColumnDefinitions>
-			<Button x:Name="btnClose" Content="X" Grid.Column="3" Margin="0" Width="25" Height="20"
-				Click="btnClose_Click" />
+			<Button x:Name="btnClose" Grid.Column="3" Margin="0" Width="24" Height="18"
+				Click="btnClose_Click" Style="{DynamicResource ButtonStyleClose}" ToolTip="退出" />
 			<Image Margin="0" Source="Images/music.ico" Stretch="Fill" Width="24" Height="24" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment"/>
 			<TextBlock Grid.Column="1" Margin="0" TextWrapping="Wrap" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Title, ElementName=Window}"/>
 		</Grid>
@@ -39,7 +39,6 @@
 				 FontSize="13"
 				 GotFocus="lbSongList_GotFocus"
 				 MouseDoubleClick="lbSongList_MouseDoubleClick"
-				 Margin="0,0,0,0.837"
 				 SelectionChanged="lbSongList_SelectionChanged"
 				 Background="#FF252A2F"
 				 Foreground="#FF80FF00"
@@ -54,7 +53,7 @@
 								  VerticalAlignment="Center"
 								  IsChecked="{Binding IsDelete}" />
 						<TextBlock Text="{Binding Name}"
-								   Width="258"
+								   Width="320"
 								   VerticalAlignment="Center" />
 						<TextBlock Text="{Binding Duration}"
 								   VerticalAlignment="Center"
@@ -65,9 +64,9 @@
 		</ListBox>
 		<Grid x:Name="GridProgress" Margin="0" Grid.Row="2" Background="#FF252A2F">
 			<StackPanel d:LayoutOverrides="Width">
-				<TextBlock x:Name="tbSongName" TextWrapping="Wrap" Text="TextBlock" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Top"/>
+				<TextBlock x:Name="tbSongName" TextWrapping="Wrap" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Top"/>
 				<StackPanel x:Name="StackPanelTime"
-					Margin="0"
+					Margin="0,2,0,0"
 					Orientation="Horizontal"
 					Width="35.833" VerticalAlignment="Bottom">
 					<TextBlock Margin="0"
@@ -97,7 +96,7 @@
 					PreviewMouseLeftButtonUp="Song_trackBar_PreviewMouseLeftButtonUp"
 					SmallChange="5"
 					IsMoveToPointEnabled="True"
-					Style="{DynamicResource SliderStylePlayProgress}" VerticalAlignment="Bottom" />
+					Style="{DynamicResource SliderStylePlayProgress}" VerticalAlignment="Bottom" Margin="0,-2,0,0" />
 			</StackPanel>
 		</Grid>
 		<Grid x:Name="GridBottomTools" Margin="0" Grid.Row="3" Background="{DynamicResource BrushBottom}">

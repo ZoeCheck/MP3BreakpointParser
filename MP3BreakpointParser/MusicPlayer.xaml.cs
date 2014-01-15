@@ -22,6 +22,8 @@ namespace MP3BreakpointParser
     public partial class MusicPlayer : Window
     {
         #region  变量
+		Window win = new System.Windows.Window();
+
         private ZPlay startsPlayer;
         static int nFFTPoint = 32;
         int HarmonicNumber = nFFTPoint / 2 + 1;
@@ -75,7 +77,7 @@ namespace MP3BreakpointParser
             timer1.Enabled = true;//启动timer
 
             this.timer3 = new System.Windows.Forms.Timer();
-            this.timer3.Interval = 50;
+            this.timer3.Interval = 10;
             this.timer3.Tick += new System.EventHandler(this.timer3_Tick);
 
 
@@ -111,17 +113,20 @@ namespace MP3BreakpointParser
                     }
                 }
             }
-            //else pictureBoxFFT.Refresh();
-
         }
 
         private void timer3_Tick(object sender, EventArgs e)
         {
-            //pictureBoxFFT.Refresh();
+			IntPtr hwnd = new System.Windows.Interop.WindowInteropHelper(win).Handle;
+			startsPlayer.DrawFFTGraphOnHWND(hwnd, 0, 0, (int)win.Width, (int)win.Height);
         }
 
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
+			win = new Window();
+			win.Width = 300;
+			win.Height = 200;
+			win.Show();
             if (playState == PlayState.Play)
             {
                 startsPlayer.PausePlayback();
@@ -150,7 +155,7 @@ namespace MP3BreakpointParser
                             startsPlayer.GetStreamInfo(ref StreamInfo);
                             Song_trackBar.Maximum = System.Convert.ToInt32((int)(StreamInfo.Length.sec));//将歌曲长度作为进度条的范围；
                             //songList.Items[playIndexNext].BackColor = Color.Yellow;
-                            playIndex = playIndexNext;
+                            playIndex = playIndexNext;							
                         }
                         catch (Exception ex)
                         {
@@ -315,8 +320,11 @@ namespace MP3BreakpointParser
                         SongList.Add(newSong);
                     }
                 }
+
+				Parser parser = new Parser(fileName);
+				parser.ParseMP3();
             }
-            //SetScrollBar();
+
         }
 
 

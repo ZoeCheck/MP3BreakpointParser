@@ -1839,6 +1839,86 @@
 				<GradientStop Color="#FF259DDE"/>
 				<GradientStop Color="#FF0A2E41" Offset="1"/>
 			</LinearGradientBrush>
+			<Style x:Key="ButtonStyleClose" TargetType="{x:Type Button}">
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="{x:Type Button}">
+							<Grid x:Name="grid" RenderTransformOrigin="0.5,0.5">
+								<Grid.RenderTransform>
+									<TransformGroup>
+										<ScaleTransform/>
+										<SkewTransform/>
+										<RotateTransform/>
+										<TranslateTransform/>
+									</TransformGroup>
+								</Grid.RenderTransform>
+								<Rectangle Stroke="#FFFFF9F9">
+									<Rectangle.Fill>
+										<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+											<GradientStop Color="#FF89D8DE" Offset="0"/>
+											<GradientStop Color="#FF083E7A" Offset="1"/>
+										</LinearGradientBrush>
+									</Rectangle.Fill>
+								</Rectangle>
+								<Path Data="M15.906,12.107 C15.906,12.107 7.5626667,0.5 7.5626667,0.5 L1.146,0.5 z" Margin="2.5,2.44,5.74,3.013" Stretch="Fill" Stroke="#FFFFF9F9">
+									<Path.Fill>
+										<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+											<GradientStop Color="#FF89D8DE" Offset="0"/>
+											<GradientStop Color="#FF083E7A" Offset="1"/>
+										</LinearGradientBrush>
+									</Path.Fill>
+								</Path>
+								<Path Data="M15.906,12.107 C15.906,12.107 7.5626667,0.5 7.5626667,0.5 L1.146,0.5 z" Margin="5.5,2.44,2.74,3.013" Stretch="Fill" Stroke="#FFFFF9F9" RenderTransformOrigin="0.5,0.5">
+									<Path.RenderTransform>
+										<TransformGroup>
+											<ScaleTransform ScaleY="1" ScaleX="-1"/>
+											<SkewTransform AngleY="0" AngleX="0"/>
+											<RotateTransform Angle="0"/>
+											<TranslateTransform/>
+										</TransformGroup>
+									</Path.RenderTransform>
+									<Path.Fill>
+										<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+											<GradientStop Color="#FF89D8DE" Offset="0"/>
+											<GradientStop Color="#FF083E7A" Offset="1"/>
+										</LinearGradientBrush>
+									</Path.Fill>
+								</Path>
+							</Grid>
+							<ControlTemplate.Triggers>
+								<Trigger Property="IsMouseOver" Value="True">
+									<Setter Property="RenderTransform" TargetName="grid">
+										<Setter.Value>
+											<TransformGroup>
+												<ScaleTransform ScaleX="1.1" ScaleY="1.1"/>
+												<SkewTransform/>
+												<RotateTransform/>
+												<TranslateTransform/>
+											</TransformGroup>
+										</Setter.Value>
+									</Setter>
+								</Trigger>
+								<Trigger Property="IsFocused" Value="True"/>
+								<Trigger Property="IsDefaulted" Value="True"/>
+								<Trigger Property="IsMouseOver" Value="True"/>
+								<Trigger Property="IsPressed" Value="True">
+									<Setter Property="RenderTransform" TargetName="grid">
+										<Setter.Value>
+											<TransformGroup>
+												<ScaleTransform/>
+												<SkewTransform/>
+												<RotateTransform/>
+												<TranslateTransform X="1" Y="1"/>
+											</TransformGroup>
+										</Setter.Value>
+									</Setter>
+								</Trigger>
+								<Trigger Property="IsEnabled" Value="False"/>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
 		</ResourceDictionary>
 	</Application.Resources>
 </Application>
