@@ -124,7 +124,6 @@
     <None Include="Application.ico">
       <Visible>false</Visible>
     </None>
-    <None Include="需求.doc" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
