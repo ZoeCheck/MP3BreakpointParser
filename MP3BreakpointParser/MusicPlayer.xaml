@@ -6,8 +6,8 @@
 		x:Class="MP3BreakpointParser.MusicPlayer"
 		x:Name="Window"
 		Title="MP3复读机"
-		Width="459"
-		Height="480"
+		Width="392"
+		Height="448"
 		ResizeMode="CanMinimize"
 		WindowStartupLocation="CenterScreen"
 		Loaded="Window_Loaded"
@@ -15,11 +15,11 @@
 		Icon="/MP3复读机;component/Images/music.ico" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None"
 		MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
-	<Grid x:Name="LayoutRoot">
+	<Grid x:Name="LayoutRoot" Margin="0">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="32.12" />
-			<RowDefinition Height="0.921*"/>
-			<RowDefinition Height="0.079*"/>
+			<RowDefinition/>
+			<RowDefinition Height="52.592"/>
 			<RowDefinition Height="40" />
 		</Grid.RowDefinitions>
 		<Grid x:Name="GridTitle" Margin="0" Background="{DynamicResource BrushBottom}">
@@ -64,40 +64,41 @@
 			</ListBox.ItemTemplate>
 		</ListBox>
 		<Grid x:Name="GridProgress" Margin="0" Grid.Row="2" Background="#FF252A2F">
-			<Slider Margin="0,0,40,0"
-				x:Name="Song_trackBar"
-				PreviewMouseLeftButtonUp="Song_trackBar_PreviewMouseLeftButtonUp"
-				SmallChange="5"
-				IsMoveToPointEnabled="True"
-				Style="{DynamicResource SliderStylePlayProgress}" d:LayoutOverrides="Height" VerticalAlignment="Bottom" />
-			<StackPanel x:Name="StackPanelTime"
-				HorizontalAlignment="Right"
-				Margin="0,0,0,1"
-				Orientation="Horizontal"
-				Width="35.833" VerticalAlignment="Bottom">
-				<TextBlock Margin="0"
-					TextWrapping="Wrap"
-					Foreground="White"
-					x:Name="tbMinute"
-					Width="15"
-					d:LayoutOverrides="Height"
-					Text="00" />
-				<TextBlock Foreground="White"
-					Margin="0,0,1,2"
-					x:Name="textBlock1"
-					TextWrapping="Wrap"
-					Text=":"
-					d:LayoutOverrides="Height"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Center" />
-				<TextBlock Foreground="White"
+			<StackPanel d:LayoutOverrides="Width">
+				<TextBlock x:Name="tbSongName" TextWrapping="Wrap" Text="TextBlock" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Top"/>
+				<StackPanel x:Name="StackPanelTime"
 					Margin="0"
-					x:Name="tbSecond"
-					TextWrapping="Wrap"
-					Width="15.833"
-					Text="00" />
+					Orientation="Horizontal"
+					Width="35.833" VerticalAlignment="Bottom">
+					<TextBlock Margin="0"
+						TextWrapping="Wrap"
+						Foreground="White"
+						x:Name="tbMinute"
+						Width="15"
+						d:LayoutOverrides="Height"
+						Text="00" />
+					<TextBlock Foreground="White"
+						Margin="0,0,1,2"
+						x:Name="textBlock1"
+						TextWrapping="Wrap"
+						Text=":"
+						d:LayoutOverrides="Height"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center" />
+					<TextBlock Foreground="White"
+						Margin="0"
+						x:Name="tbSecond"
+						TextWrapping="Wrap"
+						Width="15.833"
+						Text="00" />
+				</StackPanel>
+				<Slider
+					x:Name="Song_trackBar"
+					PreviewMouseLeftButtonUp="Song_trackBar_PreviewMouseLeftButtonUp"
+					SmallChange="5"
+					IsMoveToPointEnabled="True"
+					Style="{DynamicResource SliderStylePlayProgress}" VerticalAlignment="Bottom" />
 			</StackPanel>
-			<TextBlock x:Name="tbSongName" TextWrapping="Wrap" Text="TextBlock" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Top"/>
 		</Grid>
 		<Grid x:Name="GridBottomTools" Margin="0" Grid.Row="3" Background="{DynamicResource BrushBottom}">
 			<StackPanel x:Name="StackPanelPlayTools"
@@ -163,6 +164,15 @@
 					x:Name="btnStop"
 					Click="btnStop_Click"
 					ToolTip="停止播放"
+					Style="{DynamicResource ButtonStyleStop}" />
+				<Button HorizontalAlignment="Left"
+					Margin="6,7.5"
+					Width="25"
+					FontSize="8"
+					Height="25"
+					x:Name="btnStop_Copy"
+					Click="btnStop_Click"
+					ToolTip="模式切换"
 					Style="{DynamicResource ButtonStyleStop}" />
 			</StackPanel>
 		</Grid>
