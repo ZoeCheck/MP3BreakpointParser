@@ -46,7 +46,7 @@
 				 Foreground="#FF80FF00"
 				 BorderBrush="{x:Null}"
 				 BorderThickness="0"
-				 Style="{DynamicResource ListBoxStyleSongList}" Grid.Row="2" Margin="0">
+				 Style="{DynamicResource ListBoxStyleSongList}" Grid.Row="2" Margin="0,1,0,0">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal"
@@ -64,43 +64,6 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
-		<Grid x:Name="GridProgress" Margin="0" Grid.Row="3" Background="#FF252A2F">
-			<StackPanel d:LayoutOverrides="Width">
-				<TextBlock x:Name="tbSongName" TextWrapping="Wrap" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Top"/>
-				<StackPanel x:Name="StackPanelTime"
-					Margin="0,2,0,0"
-					Orientation="Horizontal"
-					Width="35.833" VerticalAlignment="Bottom">
-					<TextBlock Margin="0"
-						TextWrapping="Wrap"
-						Foreground="White"
-						x:Name="tbMinute"
-						Width="15"
-						d:LayoutOverrides="Height"
-						Text="00" />
-					<TextBlock Foreground="White"
-						Margin="0,0,1,2"
-						x:Name="textBlock1"
-						TextWrapping="Wrap"
-						Text=":"
-						d:LayoutOverrides="Height"
-						VerticalAlignment="Center"
-						HorizontalAlignment="Center" />
-					<TextBlock Foreground="White"
-						Margin="0"
-						x:Name="tbSecond"
-						TextWrapping="Wrap"
-						Width="15.833"
-						Text="00" />
-				</StackPanel>
-				<Slider
-					x:Name="Song_trackBar"
-					PreviewMouseLeftButtonUp="Song_trackBar_PreviewMouseLeftButtonUp"
-					SmallChange="5"
-					IsMoveToPointEnabled="True"
-					Style="{DynamicResource SliderStylePlayProgress}" VerticalAlignment="Bottom" Margin="0,-2,0,0" />
-			</StackPanel>
-		</Grid>
 		<Grid x:Name="GridBottomTools" Margin="0" Grid.Row="4" Background="{DynamicResource BrushBottom}">
 			<StackPanel x:Name="StackPanelPlayTools"
 				Margin="0"
@@ -178,5 +141,43 @@
 			</StackPanel>
 		</Grid>
 		<local:UCPlaySpectrum x:Name="ucPlaySpectrum" Margin="0" Grid.Row="1"/>
+		<Grid x:Name="GridProgress" Margin="0" Grid.Row="3" Background="#FF252A2F">
+			<StackPanel d:LayoutOverrides="Width" Margin="0,0,0,-4">
+				<TextBlock x:Name="tbSongName" TextWrapping="Wrap" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Top"/>
+				<StackPanel x:Name="StackPanelTime"
+					Margin="0,2,0,0"
+					Orientation="Horizontal"
+					Width="35.833" VerticalAlignment="Bottom">
+					<TextBlock Margin="0"
+						TextWrapping="Wrap"
+						Foreground="White"
+						x:Name="tbMinute"
+						Width="15"
+						d:LayoutOverrides="Height"
+						Text="00" />
+					<TextBlock Foreground="White"
+						Margin="0,0,1,2"
+						x:Name="textBlock1"
+						TextWrapping="Wrap"
+						Text=":"
+						d:LayoutOverrides="Height"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center" />
+					<TextBlock Foreground="White"
+						Margin="0"
+						x:Name="tbSecond"
+						TextWrapping="Wrap"
+						Width="15.833"
+						Text="00" />
+				</StackPanel>
+				<Slider
+					x:Name="Song_trackBar"
+					PreviewMouseLeftButtonUp="Song_trackBar_PreviewMouseLeftButtonUp"
+					SmallChange="5"
+					IsMoveToPointEnabled="True"
+					Style="{DynamicResource SliderStylePlayProgress}" VerticalAlignment="Bottom" Margin="0,4,0,0" />
+			</StackPanel>
+		</Grid>
+		<Path Data="M16,104 L208,104" Fill="#FFF4F4F5" Margin="0" Grid.Row="2" Stretch="Fill" Stroke="#FFB6B5B5" d:LayoutOverrides="GridBox" VerticalAlignment="Top"/>
 	</Grid>
 </Window>

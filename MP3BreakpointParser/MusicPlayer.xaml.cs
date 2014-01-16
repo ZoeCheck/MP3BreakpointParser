@@ -33,13 +33,6 @@ namespace MP3BreakpointParser
 		int[] RightPhase;
 		bool manualStop = false;
 		private TCallbackFunc CallbackFunc;
-
-		//增加歌曲列表滚动条变量
-		private int oldValue = 0;
-		private float vScrollMultiplier;
-		private float vAbsPos;
-		private float ListHeight;
-
 		private PlayState playState = PlayState.Pause;
 		private string songListfullName = ""; //播放列表名称
 		private int playIndex = -1, playIndexNext = -1; //当前播放索引
@@ -47,10 +40,13 @@ namespace MP3BreakpointParser
 		private bool list_Isnull = false; //判断删除歌曲时是否全部删除列表中歌曲
 		private bool IsPlayAfterload = true;//启动后即点击播放按钮
 		private bool IsSelectChange = false;
-		private bool isIncreaseVolumn = false;//true 增加音量
-		private System.Windows.Forms.Timer timer1;//更改播放进度条timer
-		private System.Windows.Forms.Timer timer3;
+		private System.Windows.Forms.Timer timerPlayProgress;//更改播放进度条timer
+		private System.Windows.Forms.Timer timerDraw;//画频谱计时器
+		private System.Windows.Forms.Timer timerPause;//暂停计时器
 		private int addIndex = 0;
+
+		private bool isHighNow = false;
+		private bool isHighOld = false;
 		#endregion
 
 		private ObservableCollection<Song> songList;
@@ -71,21 +67,24 @@ namespace MP3BreakpointParser
 
 		private void InitPlayer()
 		{
-			timer1 = new System.Windows.Forms.Timer();
-			this.timer1.Interval = 1000;
-			this.timer1.Tick += new EventHandler(timer1_Tick);
-			timer1.Enabled = true;//启动timer
+			timerPlayProgress = new System.Windows.Forms.Timer();
+			this.timerPlayProgress.Interval = 1000;
+			this.timerPlayProgress.Tick += new EventHandler(timerPlayProgress_Tick);
+			timerPlayProgress.Enabled = true;//启动timer
 
-			this.timer3 = new System.Windows.Forms.Timer();
-			this.timer3.Interval = 10;
-			this.timer3.Tick += new System.EventHandler(this.timer3_Tick);
+			this.timerDraw = new System.Windows.Forms.Timer();
+			this.timerDraw.Interval = 10;
+			this.timerDraw.Tick += new System.EventHandler(this.timerDraw_Tick);
 
+			this.timerPause = new System.Windows.Forms.Timer();
+			this.timerPause.Interval = 2000;
+			this.timerPause.Tick += new System.EventHandler(this.timerPause_Tick);
 
 			SongList = new ObservableCollection<Song>();
 			lbSongList.ItemsSource = SongList;
 		}
 
-		void timer1_Tick(object sender, EventArgs e)
+		void timerPlayProgress_Tick(object sender, EventArgs e)
 		{
 			startsPlayer.GetFFTData(nFFTPoint, TFFTWindow.fwBartlettHann, ref HarmonicNumber, ref HarmonicFreq, ref LeftAmplitude, ref RightAmplitude, ref LeftPhase, ref RightPhase);
 			if (playState != PlayState.Stop)
@@ -115,78 +114,118 @@ namespace MP3BreakpointParser
 			}
 		}
 
-		private void timer3_Tick(object sender, EventArgs e)
+		private void timerDraw_Tick(object sender, EventArgs e)
 		{
-			startsPlayer.GetFFTData(nFFTPoint, TFFTWindow.fwBartlettHann, ref HarmonicNumber, ref HarmonicFreq, ref LeftAmplitude, ref RightAmplitude, ref LeftPhase, ref RightPhase);
-			//Console.WriteLine("===={0}", arg0);
+			int totalValue = 0;
+			startsPlayer.GetFFTData(nFFTPoint, TFFTWindow.fwGauss, ref HarmonicNumber, ref HarmonicFreq, ref LeftAmplitude, ref RightAmplitude, ref LeftPhase, ref RightPhase);
+			for (int i = 0; i < HarmonicNumber; i++)
+			{
+				totalValue += LeftAmplitude[i];
+			}
+			Console.WriteLine("{0} {1}", DateTime.Now.ToString("mm:ss"), totalValue);
 			startsPlayer.DrawFFTGraphOnHWND(hwnd, 0, 0, (int)ucPlaySpectrum.ActualWidth, (int)ucPlaySpectrum.ActualHeight);
+
+			//if (totalValue < 130)//认为是低频
+			//{
+			//    if (isHighOld == true)//从高频到低频，暂停，启动暂停计时器
+			//    {
+			//        isHighOld = false;
+			//        ResumePlay();
+			//        //启动暂停计时器
+			//        timerPause.Start();
+			//    }
+			//}
+			//else//认为是高频
+			//{
+			//    if (isHighOld == false)//从低频到高频,继续，关闭暂停计时器
+			//    {
+			//        isHighOld = true;
+			//        Play();
+			//        //关闭暂停计时器
+			//        timerPause.Stop();
+			//    }
+			//}
+		}
+
+		private void timerPause_Tick(object sender, EventArgs e)
+		{
+			Play();
 		}
 
 		private void btnPlay_Click(object sender, RoutedEventArgs e)
 		{
 			if (playState == PlayState.Play)
 			{
-				startsPlayer.PausePlayback();
-				playState = PlayState.Pause;
-				btnPlay.Visibility = System.Windows.Visibility.Visible;
-				btnsuspend.Visibility = System.Windows.Visibility.Hidden;
-				btnPlay.Focus();
+				ResumePlay();
 			}
 			else
 			{
-				if (playFlag == false)//如果歌曲第一次播放
+				Play();
+			}
+		}
+
+		private void Play()
+		{
+			if (playFlag == false)//如果歌曲第一次播放
+			{
+				if (IsPlayAfterload == true) { SetStartindex(); IsPlayAfterload = false; }
+
+				if (playIndexNext >= 0)
 				{
-					if (IsPlayAfterload == true) { SetStartindex(); IsPlayAfterload = false; }
-
-					if (playIndexNext >= 0)
+					try
 					{
-						try
-						{
-							startsPlayer.OpenFile(((Song)this.lbSongList.Items[playIndexNext]).Tag.ToString(), TStreamFormat.sfAutodetect);
-							startsPlayer.StartPlayback();
-							timer3.Enabled = true;
-							manualStop = false;
-							Song_trackBar.Value = 0;
-							Song_trackBar.Minimum = 0;
-							TStreamInfo StreamInfo = new TStreamInfo();
-							startsPlayer.GetStreamInfo(ref StreamInfo);
-							Song_trackBar.Maximum = System.Convert.ToInt32((int)(StreamInfo.Length.sec));//将歌曲长度作为进度条的范围；
-							//songList.Items[playIndexNext].BackColor = Color.Yellow;
-							playIndex = playIndexNext;
-						}
-						catch (Exception ex)
-						{
-							//MyMessageBox.Show("歌曲不存在或已删除或不支持此格式 ！" + ex.Message, "提示信息", MyMessageBox.CYButtons.OK, MyMessageBox.CYIcon.Error);
-							return;
-						}
-
-
-						playFlag = true;//表示歌曲已经开始播放
-						playState = PlayState.Play;
-
-						SetControlState(playState); //设置按钮状态
-						btnsuspend.Visibility = System.Windows.Visibility.Visible;
-						btnPlay.Visibility = System.Windows.Visibility.Hidden;
-
-
+						startsPlayer.OpenFile(((Song)this.lbSongList.Items[playIndexNext]).Tag.ToString(), TStreamFormat.sfAutodetect);
+						startsPlayer.StartPlayback();
+						timerDraw.Start();
+						manualStop = false;
+						Song_trackBar.Value = 0;
+						Song_trackBar.Minimum = 0;
+						TStreamInfo StreamInfo = new TStreamInfo();
+						startsPlayer.GetStreamInfo(ref StreamInfo);
+						Song_trackBar.Maximum = System.Convert.ToInt32((int)(StreamInfo.Length.sec));//将歌曲长度作为进度条的范围；
+						//songList.Items[playIndexNext].BackColor = Color.Yellow;
+						playIndex = playIndexNext;
 					}
-					else
+					catch (Exception ex)
 					{
-						//MessageBox.Show("请选择歌曲！", "提示信息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						//MyMessageBox.Show("歌曲不存在或已删除或不支持此格式 ！" + ex.Message, "提示信息", MyMessageBox.CYButtons.OK, MyMessageBox.CYIcon.Error);
 						return;
 					}
+
+
+					playFlag = true;//表示歌曲已经开始播放
+					playState = PlayState.Play;
+
+					SetControlState(playState); //设置按钮状态
+					btnsuspend.Visibility = System.Windows.Visibility.Visible;
+					btnPlay.Visibility = System.Windows.Visibility.Hidden;
 				}
 				else
 				{
-					startsPlayer.ResumePlayback();
-					playState = PlayState.Play;
-					btnsuspend.Visibility = System.Windows.Visibility.Visible;
-					btnPlay.Visibility = System.Windows.Visibility.Hidden;
-					//btnPlay.Text = "暂停";
+					//MessageBox.Show("请选择歌曲！", "提示信息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					return;
 				}
+			}
+			else
+			{
+				startsPlayer.ResumePlayback();
+				playState = PlayState.Play;
+				btnsuspend.Visibility = System.Windows.Visibility.Visible;
+				btnPlay.Visibility = System.Windows.Visibility.Hidden;
+				//btnPlay.Text = "暂停";
 			}
 
 			tbSongName.Text = ((Song)this.lbSongList.Items[playIndexNext]).Name;
+		}
+
+		private void ResumePlay()
+		{
+			startsPlayer.PausePlayback();
+			playState = PlayState.Pause;
+			btnPlay.Visibility = System.Windows.Visibility.Visible;
+			btnsuspend.Visibility = System.Windows.Visibility.Hidden;
+			btnPlay.Focus();
+			timerDraw.Start();
 		}
 
 		private void SetControlState(PlayState pState)
@@ -577,7 +616,7 @@ namespace MP3BreakpointParser
 		{
 			manualStop = true;//人为停止,非自然播放结束
 			startsPlayer.StopPlayback();
-			timer3.Enabled = false;
+			timerDraw.Enabled = false;
 			playState = PlayState.Stop;
 			//songList.Items[playIndex].BackColor = Color.White;
 			playFlag = false;
@@ -666,7 +705,7 @@ namespace MP3BreakpointParser
 			{
 				manualStop = true;//人为停止,非自然播放结束
 				startsPlayer.StopPlayback();
-				timer3.Enabled = false;
+				timerDraw.Enabled = false;
 				if (playIndex >= 0 && playIndex < (lbSongList.Items.Count))
 				{
 					//songList.Items[playIndex].BackColor = Color.White;
@@ -675,12 +714,12 @@ namespace MP3BreakpointParser
 				playIndexNext = lbSongList.SelectedIndex;
 
 				//((Song)lbSongList.SelectedItems[0]).IsSelected = true;
-				((ListBoxItem)lbSongList.ItemContainerGenerator.ContainerFromItem((Song)lbSongList.Items[playIndexNext])).Background = new SolidColorBrush(Colors.Chocolate);
+				//((ListBoxItem)lbSongList.ItemContainerGenerator.ContainerFromItem((Song)lbSongList.Items[playIndexNext])).Background = new SolidColorBrush(Colors.Chocolate);
 
 				Song preSong = GetPreSong((Song)lbSongList.Items[playIndexNext]);
 				if (preSong != null)
 				{
-					((ListBoxItem)lbSongList.ItemContainerGenerator.ContainerFromItem(preSong)).Background = null;
+					//((ListBoxItem)lbSongList.ItemContainerGenerator.ContainerFromItem(preSong)).Background = null;
 				}
 
 
@@ -721,12 +760,18 @@ namespace MP3BreakpointParser
 
 		private void btnsuspend_Click(object sender, RoutedEventArgs e)
 		{
+			Pause();
+		}
+
+		private void Pause()
+		{
 			btnsuspend.Visibility = System.Windows.Visibility.Hidden;
 			startsPlayer.PausePlayback();
 			playState = PlayState.Pause;
 
 			SetControlState(playState); //设置按钮状态
 			btnPlay.Visibility = System.Windows.Visibility.Visible;
+			timerDraw.Stop();
 		}
 
 		private void btnPre_Click(object sender, RoutedEventArgs e)
@@ -736,7 +781,7 @@ namespace MP3BreakpointParser
 			{
 				manualStop = true;
 				startsPlayer.StopPlayback();
-				timer3.Enabled = false;
+				timerDraw.Enabled = false;
 				//songList.Items[playIndex].BackColor = Color.White;
 				((Song)lbSongList.Items[playIndex]).IsSelected = false;
 				playIndexNext = playIndex;
@@ -774,7 +819,7 @@ namespace MP3BreakpointParser
 			{
 				manualStop = true;
 				startsPlayer.StopPlayback();
-				timer3.Enabled = false;
+				timerDraw.Enabled = false;
 				//songList.Items[playIndex].BackColor = Color.White;
 				((Song)lbSongList.Items[playIndex]).IsSelected = false;
 				playIndexNext = playIndex;
@@ -793,13 +838,13 @@ namespace MP3BreakpointParser
 				//当前播放歌曲变色
 				Song currentSong = ((Song)lbSongList.Items[playIndexNext]);
 				ListBoxItem currentListBocItem = this.lbSongList.ItemContainerGenerator.ContainerFromItem(currentSong) as ListBoxItem;
-				currentListBocItem.Background = new SolidColorBrush(Colors.Chocolate);
+				//currentListBocItem.Background = new SolidColorBrush(Colors.Chocolate);
 				//上一首歌曲变色
 				Song preSong = GetPreSong(currentSong);
 				if (preSong != null)
 				{
 					ListBoxItem preListBocItem = this.lbSongList.ItemContainerGenerator.ContainerFromItem(preSong) as ListBoxItem;
-					preListBocItem.Background = null;
+					//preListBocItem.Background = null;
 					//preListBocItem.IsSelected = false;
 				}
 
@@ -875,7 +920,7 @@ namespace MP3BreakpointParser
 					tbSongName.Text = "享受音乐每一秒";
 					manualStop = true;
 					startsPlayer.StopPlayback();
-					timer3.Enabled = false;
+					timerDraw.Enabled = false;
 					startsPlayer.Close();
 					playState = PlayState.Stop;
 					SaveList();
