@@ -2,6 +2,7 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:MP3BreakpointParser"
 		mc:Ignorable="d"
 		x:Class="MP3BreakpointParser.MusicPlayer"
 		x:Name="Window"
@@ -12,12 +13,13 @@
 		WindowStartupLocation="CenterScreen"
 		Loaded="Window_Loaded"
 		Closing="Window_Closing"
-		Icon="/MP3复读机;component/Images/music.ico" Background="#FF252A2F" AllowsTransparency="True" WindowStyle="None"
-		MouseLeftButtonDown="Window_MouseLeftButtonDown">
+		Icon="/MP3复读机;component/Images/music.ico"
+		MouseLeftButtonDown="Window_MouseLeftButtonDown" Background="#FF252A2F">
 
 	<Grid x:Name="LayoutRoot" Margin="0">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="32.12" />
+			<RowDefinition Height="0" />
+			<RowDefinition Height="80"/>
 			<RowDefinition/>
 			<RowDefinition Height="52.592"/>
 			<RowDefinition Height="40" />
@@ -44,7 +46,7 @@
 				 Foreground="#FF80FF00"
 				 BorderBrush="{x:Null}"
 				 BorderThickness="0"
-				 Style="{DynamicResource ListBoxStyleSongList}" Grid.Row="1">
+				 Style="{DynamicResource ListBoxStyleSongList}" Grid.Row="2" Margin="0">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal"
@@ -53,7 +55,7 @@
 								  VerticalAlignment="Center"
 								  IsChecked="{Binding IsDelete}" />
 						<TextBlock Text="{Binding Name}"
-								   Width="320"
+								   Width="310"
 								   VerticalAlignment="Center" />
 						<TextBlock Text="{Binding Duration}"
 								   VerticalAlignment="Center"
@@ -62,7 +64,7 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
-		<Grid x:Name="GridProgress" Margin="0" Grid.Row="2" Background="#FF252A2F">
+		<Grid x:Name="GridProgress" Margin="0" Grid.Row="3" Background="#FF252A2F">
 			<StackPanel d:LayoutOverrides="Width">
 				<TextBlock x:Name="tbSongName" TextWrapping="Wrap" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Top"/>
 				<StackPanel x:Name="StackPanelTime"
@@ -99,7 +101,7 @@
 					Style="{DynamicResource SliderStylePlayProgress}" VerticalAlignment="Bottom" Margin="0,-2,0,0" />
 			</StackPanel>
 		</Grid>
-		<Grid x:Name="GridBottomTools" Margin="0" Grid.Row="3" Background="{DynamicResource BrushBottom}">
+		<Grid x:Name="GridBottomTools" Margin="0" Grid.Row="4" Background="{DynamicResource BrushBottom}">
 			<StackPanel x:Name="StackPanelPlayTools"
 				Margin="0"
 				Orientation="Horizontal"
@@ -175,5 +177,6 @@
 					Style="{DynamicResource ButtonStyleStop}" />
 			</StackPanel>
 		</Grid>
+		<local:UCPlaySpectrum x:Name="ucPlaySpectrum" Margin="0" Grid.Row="1"/>
 	</Grid>
 </Window>

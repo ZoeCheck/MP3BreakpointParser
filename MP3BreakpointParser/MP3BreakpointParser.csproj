@@ -105,6 +105,9 @@
     <Compile Include="NotifyProperty.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Song.cs" />
+    <Compile Include="UCPlaySpectrum.xaml.cs">
+      <DependentUpon>UCPlaySpectrum.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WriteLog.cs" />
     <Compile Include="ZPlay.cs" />
     <Compile Include="App.xaml.cs">
@@ -114,6 +117,10 @@
     <Page Include="MusicPlayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UCPlaySpectrum.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
